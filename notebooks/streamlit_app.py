@@ -9,6 +9,16 @@ import plotly.express as px
 import plotly.graph_objects as go
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 import json
+# --- Pre-flight dependency check ---
+import importlib, sys
+required = ["plotly", "torch", "scikit_learn", "matplotlib", "pandas", "numpy"]
+missing = [pkg for pkg in required if importlib.util.find_spec(pkg) is None]
+
+if missing:
+    st.error(f"⚠️ Missing dependencies detected: {missing}")
+    st.stop()
+else:
+    st.sidebar.success("✅ All dependencies verified")
 
 # Set page config
 st.set_page_config(
