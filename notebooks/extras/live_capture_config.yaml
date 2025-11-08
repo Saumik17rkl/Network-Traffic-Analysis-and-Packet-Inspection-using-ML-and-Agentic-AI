@@ -1,0 +1,5 @@
+capture_duration: 30
+file_prefix: capture_
+interface: eth0
+max_packets: 1000
+output_dir: data/live_capture
