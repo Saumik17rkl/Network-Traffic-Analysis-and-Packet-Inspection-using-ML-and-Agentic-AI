@@ -17,7 +17,7 @@ import importlib, streamlit as st
 import importlib, streamlit as st, platform
 
 # ✅ Use the correct import names (e.g., sklearn instead of scikit_learn)
-required = ["plotly", "torch", "sklearn", "matplotlib", "pandas", "numpy"]
+required = ["plotly", "torch", "sklearn", "matplotlib", "pandas", "numpy","scikit-learn"]
 missing = [pkg for pkg in required if importlib.util.find_spec(pkg) is None]
 
 if missing:
