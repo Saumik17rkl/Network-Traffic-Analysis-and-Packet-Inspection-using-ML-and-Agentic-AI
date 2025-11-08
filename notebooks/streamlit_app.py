@@ -11,6 +11,25 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 import json
 # --- Pre-flight dependency check ---
 import importlib, sys
+# --- Pre-flight dependency check ---
+import importlib, streamlit as st
+required = ["plotly", "torch", "sklearn", "matplotlib", "pandas", "numpy"]
+missing = [pkg for pkg in required if importlib.util.find_spec(pkg) is None]
+
+if missing:
+    st.error(f"⚠️ Missing dependencies detected: {missing}")
+    st.stop()
+else:
+    import platform
+    st.sidebar.success("✅ All dependencies verified")
+    st.sidebar.write(f"**Python:** {platform.python_version()}")
+    try:
+        import torch, sklearn
+        st.sidebar.write(f"**Torch:** {torch.__version__}")
+        st.sidebar.write(f"**Sklearn:** {sklearn.__version__}")
+    except Exception:
+        pass
+
 required = ["plotly", "torch", "scikit_learn", "matplotlib", "pandas", "numpy"]
 missing = [pkg for pkg in required if importlib.util.find_spec(pkg) is None]
 
