@@ -385,18 +385,156 @@ if st.session_state.df is not None:
                     st.warning(f"Feature importance not displayed: Expected {len(feature_names)} features but got {len(importances)} importance scores")
     
     # Data visualization
-    st.subheader("Data Visualization")
-    
-    # Attack distribution
-    attack_counts = df['target'].value_counts().reset_index()
-    attack_counts.columns = ['Attack Type', 'Count']
-    
-    fig1 = px.pie(attack_counts, 
-                 values='Count', 
-                 names='Attack Type',
-                 title='Attack Type Distribution')
-    st.plotly_chart(fig1)
-    
+    # ===================== 🌐 Enhanced Data Visualization =====================
+    # ===================== 🌐 Enhanced Data Visualization =====================
+            st.subheader("📊 Interactive Network Data Visualization")
+
+            tab1, tab2, tab3, tab4, tab5 = st.tabs([
+                "Attack Overview",
+                "Traffic Heatmap",
+                "Feature Correlation",
+                "Protocol Insights",
+                "Feature Distribution"
+            ])
+
+            # --- Tab 1: Attack Overview ---
+            with tab1:
+                st.markdown("### ⚔️ Attack Type Distribution")
+                attack_counts = df['target'].value_counts().reset_index()
+                attack_counts.columns = ['Attack Type', 'Count']
+
+                # Top attacks bar
+                top_attacks = attack_counts.head(10)
+                fig1 = px.bar(
+                    top_attacks,
+                    x='Attack Type', y='Count', color='Attack Type', text='Count',
+                    color_discrete_sequence=px.colors.qualitative.Set3,
+                    title="Top 10 Most Common Attack Types"
+                )
+                fig1.update_layout(showlegend=False, template="plotly_dark")
+                st.plotly_chart(fig1, use_container_width=True)
+
+                if st.checkbox("Show Full Attack Pie Chart"):
+                    fig_pie = px.pie(
+                        attack_counts,
+                        values='Count', names='Attack Type', hole=0.4,
+                        title="All Attack Types (Donut Chart)",
+                        color_discrete_sequence=px.colors.qualitative.Pastel
+                    )
+                    fig_pie.update_traces(textposition='inside', textinfo='percent+label')
+                    fig_pie.update_layout(template="plotly_dark")
+                    st.plotly_chart(fig_pie, use_container_width=True)
+
+            # --- Tab 2: Traffic Heatmap ---
+            with tab2:
+                st.markdown("### 🌡 Feature Correlation Heatmap (Top 10 Numeric Columns)")
+                numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+                if len(numeric_cols) > 1:
+                    corr = df[numeric_cols].corr()
+                    fig2 = px.imshow(
+                        corr.iloc[:10, :10],
+                        text_auto=True,
+                        color_continuous_scale="Viridis",
+                        title="Top 10 Numeric Features Correlation Matrix"
+                    )
+                    fig2.update_layout(template="plotly_dark", height=600)
+                    st.plotly_chart(fig2, use_container_width=True)
+                else:
+                    st.warning("Not enough numeric columns for correlation heatmap.")
+
+            # --- Tab 3: Feature Correlation Scatter ---
+            with tab3:
+                st.markdown("### 🔍 Feature Pair Analysis")
+                num_cols = [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])]
+                if len(num_cols) > 1:
+                    col_x = st.selectbox("Select X-axis Feature", num_cols, index=0)
+                    col_y = st.selectbox("Select Y-axis Feature", num_cols, index=1)
+                    fig3 = px.scatter(
+                        df.sample(min(2000, len(df))),  # limit for performance
+                        x=col_x, y=col_y, color='target',
+                        title=f"Scatter Plot: {col_x} vs {col_y}",
+                        opacity=0.6,
+                        color_discrete_sequence=px.colors.qualitative.Bold
+                    )
+                    fig3.update_layout(template="plotly_dark", height=600)
+                    st.plotly_chart(fig3, use_container_width=True)
+
+            # --- Tab 4: Protocol Insights ---
+            with tab4:
+                st.markdown("### 🌐 Protocol Type Traffic Overview")
+                if 'protocol_type' in df.columns:
+                    proto_agg = df.groupby('protocol_type')[['src_bytes', 'dst_bytes']].mean().reset_index()
+                    fig4 = go.Figure()
+                    fig4.add_trace(go.Bar(
+                        x=proto_agg['protocol_type'], y=proto_agg['src_bytes'],
+                        name='Avg Src Bytes', marker_color='skyblue'
+                    ))
+                    fig4.add_trace(go.Bar(
+                        x=proto_agg['protocol_type'], y=proto_agg['dst_bytes'],
+                        name='Avg Dst Bytes', marker_color='lightcoral'
+                    ))
+                    fig4.update_layout(
+                        barmode='group',
+                        title="Average Traffic Bytes by Protocol Type",
+                        xaxis_title="Protocol Type",
+                        yaxis_title="Average Bytes",
+                        legend_title="Metric",
+                        template="plotly_dark",
+                        height=600
+                    )
+                    st.plotly_chart(fig4, use_container_width=True)
+                else:
+                    st.warning("⚠️ No 'protocol_type' column found in the dataset.")
+
+            # --- Tab 5: Feature Distribution ---
+            with tab5:
+                st.markdown("### 📈 Feature Distribution Analysis")
+                available_num_cols = [
+                    col for col in df.columns 
+                    if col not in ['target'] + [c for c in CATEGORICAL_COLS if c in df.columns]
+                    and pd.api.types.is_numeric_dtype(df[col])
+                ]
+
+                if available_num_cols:
+                    num_col = st.selectbox("Select a numerical feature to analyze:", available_num_cols)
+                    df_viz = df.copy()
+                    df_viz[num_col] = df_viz[num_col].replace(0, np.nan)
+                    df_viz[f"log_{num_col}"] = np.log1p(df_viz[num_col])
+
+                    subtab1, subtab2, subtab3 = st.tabs(["Histogram", "Boxplot", "Violin Plot"])
+
+                    # Histogram
+                    with subtab1:
+                        fig_h = px.histogram(
+                            df_viz, x=f"log_{num_col}", color='target', nbins=50,
+                            title=f"Distribution of {num_col} (Log Scaled)",
+                            color_discrete_sequence=px.colors.qualitative.Dark24
+                        )
+                        fig_h.update_layout(template="plotly_dark", height=500)
+                        st.plotly_chart(fig_h, use_container_width=True)
+
+                    # Boxplot
+                    with subtab2:
+                        fig_b = px.box(
+                            df_viz, x='target', y=f"log_{num_col}", color='target',
+                            title=f"Boxplot of {num_col} (Log Scaled)",
+                            color_discrete_sequence=px.colors.qualitative.Safe
+                        )
+                        fig_b.update_layout(template="plotly_dark", height=500)
+                        st.plotly_chart(fig_b, use_container_width=True)
+
+                    # Violin Plot
+                    with subtab3:
+                        fig_v = px.violin(
+                            df_viz.sample(min(3000, len(df_viz))),
+                            x='target', y=f"log_{num_col}", color='target',
+                            box=True, points="all",
+                            title=f"Violin Plot of {num_col} by Attack Type",
+                            color_discrete_sequence=px.colors.qualitative.Prism
+                        )
+                        fig_v.update_layout(template="plotly_dark", height=550)
+                        st.plotly_chart(fig_v, use_container_width=True)
+
     # Numerical feature distribution
     if len(df.columns) > 1:
         # Get available numerical columns (exclude target and categorical columns)
