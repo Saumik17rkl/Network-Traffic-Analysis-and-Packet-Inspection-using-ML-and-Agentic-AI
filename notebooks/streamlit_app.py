@@ -13,6 +13,10 @@ import json
 import importlib, sys
 # --- Pre-flight dependency check ---
 import importlib, streamlit as st
+# --- Pre-flight dependency check (final corrected) ---
+import importlib, streamlit as st, platform
+
+# ✅ Use the correct import names (e.g., sklearn instead of scikit_learn)
 required = ["plotly", "torch", "sklearn", "matplotlib", "pandas", "numpy"]
 missing = [pkg for pkg in required if importlib.util.find_spec(pkg) is None]
 
@@ -20,24 +24,12 @@ if missing:
     st.error(f"⚠️ Missing dependencies detected: {missing}")
     st.stop()
 else:
-    import platform
     st.sidebar.success("✅ All dependencies verified")
-    st.sidebar.write(f"**Python:** {platform.python_version()}")
-    try:
-        import torch, sklearn
-        st.sidebar.write(f"**Torch:** {torch.__version__}")
-        st.sidebar.write(f"**Sklearn:** {sklearn.__version__}")
-    except Exception:
-        pass
-
-required = ["plotly", "torch", "scikit_learn", "matplotlib", "pandas", "numpy"]
-missing = [pkg for pkg in required if importlib.util.find_spec(pkg) is None]
-
-if missing:
-    st.error(f"⚠️ Missing dependencies detected: {missing}")
-    st.stop()
-else:
-    st.sidebar.success("✅ All dependencies verified")
+    st.sidebar.markdown(f"""
+    **Python:** {platform.python_version()}  
+    **Torch:** {__import__('torch').__version__}  
+    **Scikit-learn:** {__import__('sklearn').__version__}
+    """)
 
 # Set page config
 st.set_page_config(
