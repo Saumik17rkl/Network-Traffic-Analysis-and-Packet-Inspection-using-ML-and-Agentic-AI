@@ -21,11 +21,18 @@ CompactNetTrace is a lightweight, reproducible research project for network traf
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
-   cd "Network Traffic Analysis and Packet Inspection using ML and Agentic AI"
+   git clone https://github.com/Saumik17rkl/Network-Traffic-Analysis-and-Packet-Inspection-using-ML-and-Agentic-AI.git
+   cd Network-Traffic-Analysis-and-Packet-Inspection-using-ML-and-Agentic-AI
    ```
 
-2. Install dependencies:
+2. Create and activate a virtual environment:
+   ```bash
+   python -m venv .venv
+   .\.venv\Scripts\activate  # Windows
+   source .venv/bin/activate  # Linux/Mac
+   ```
+
+3. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
