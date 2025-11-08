@@ -1,12 +1,17 @@
+<<<<<<< HEAD
 # === CompactNetTrace — Streamlit Cloud Compatible Requirements ===
 
 # Core
 streamlit==1.31.0
+=======
+streamlit>=1.18.0
+scikit-learn>=1.2.0
+>>>>>>> aa0cb980602041ee0a23a7c26c00fc74279d8dd3
 numpy>=1.24.0
 pandas>=1.5.0
-scikit-learn>=1.3.0
 matplotlib>=3.6.0
 joblib>=1.2.0
+<<<<<<< HEAD
 
 # Lightweight Deep Learning (CPU-only)
 torch==2.3.0
@@ -25,3 +30,10 @@ rich>=13.0.0
 # Development
 ipython>=8.0.0
 jupyter>=1.0.0
+=======
+onnxruntime>=1.15.0
+torch>=2.1.0
+scapy>=2.5.0
+tqdm>=4.64.0
+plotly>=5.13.0
+>>>>>>> aa0cb980602041ee0a23a7c26c00fc74279d8dd3
