@@ -1,15 +1,11 @@
 
 # Core
-streamlit==1.31.0
-=======
-streamlit>=1.18.0
+streamlit
 scikit-learn>=1.2.0
->>>>>>> aa0cb980602041ee0a23a7c26c00fc74279d8dd3
 numpy>=1.24.0
 pandas>=1.5.0
 matplotlib>=3.6.0
 joblib>=1.2.0
-<<<<<<< HEAD
 
 # Lightweight Deep Learning (CPU-only)
 torch==2.3.0
